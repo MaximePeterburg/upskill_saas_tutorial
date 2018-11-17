@@ -1,29 +1,30 @@
-<div class="ui segment">
-  <h3>Mailbox</h3>
-  <div class="ui list">
-    <div class="item">
-    <% @conversations.each do |conversation| %>
-      <% if conversation.sender_id == current_user.id || conversation.recipient_id == current_user.id %>
-        <% if conversation.sender_id == current_user.id %>
-          <% recipient = User.find(conversation.recipient_id) %>
-        <% else %>
-          <% recipient = User.find(conversation.sender_id) %>
+<div class="container">
+  <div class="row">
+    <div class="col-sm-6 col-sm-offset-3">
+      <h1 class="text-center">Your Conversations</h1>
+      <ul class="list-unstyled">
+        <% @conversations.each do |conversation| %>
+          <% if conversation.sender_id == current_user.id || conversation.recipient_id == current_user.id %>
+            <% if conversation.sender_id == current_user.id %>
+              <% recipient = User.find(conversation.recipient_id) %>
+            <% else %>
+              <% recipient = User.find(conversation.sender_id) %>
+            <% end %>
+            <%= link_to conversation_messages_path(conversation) do %>
+              <li>
+                <div class="well row", id="well-row">
+                  <div class="col-sm-2">
+                    <%= image_tag recipient.profile.avatar.url, class: 'conversation-index-avatar' %>
+                  </div>
+                  <div class="col-sm-10">
+                    <h4 class='no-link-style'><%= recipient.profile.first_name %> <%= recipient.profile.last_name %></h4>
+                  </div>
+                </div>
+              </li>
+            <% end %>
+          <% end %>
         <% end %>
-      <%= link_to recipient.first_name,   conversation_messages_path(conversation)%>
-      <% end %>
-    <% end %>
+      </ul>
     </div>
-  </div>
-</div>
-<div class="ui segment">
-  <h3>All Users</h3>
-  <div class="ui list">
-    <% @users.each do |user| %>
-      <% if user.id != current_user.id %>
-      <div class="item">
-        <%= user.profile.first_name %> <%= user.profile.last_name %> <%= link_to 'Send Message', conversations_path(sender_id: current_user.id, recipient_id: user.id), method: 'post'%>
-      </div>
-      <% end %>
-    <% end %>
   </div>
 </div>

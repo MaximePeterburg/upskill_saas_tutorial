@@ -1,32 +1,62 @@
-<% if @over_ten %>
-  <%= link_to 'Show Previous', '?m=all' %>
-<% end %>
-<div class="ui segment">
-  <% @messages.each do |message| %>
-    <% if message.body %>
-      <% user = User.find(message.user_id) %>
-      <div class="item">
-        <div class="content">
-          <div class="header"><strong><%= user.profile.first_name %> <%= user.profile.last_name %></strong>     
-            <%= message.message_time %>
+<div class="container">
+  <div class="row">
+    <div class="col-sm-8 col-sm-offset-2">
+      <div class="well row", id="header-well">
+        <div class="col-sm-4 text-center">
+          <% if @recipient.profile.avatar %>
+            <%= link_to @recipient do %>
+            <%= image_tag @recipient.profile.avatar.url, class: 'messages-index-avatar' %>
+            <% end %>
+          <% end %>
           </div>
-          <div class="list">
-            <div class="item">
-              <i class="right triangle icon"></i>
-              <%= message.body %>
+        <%= link_to @recipient do %>
+          <h2><%= @recipient.profile.first_name %> <%= @recipient.profile.last_name %></h2>
+        <% end %>
+        <h3 class="text-muted"><%= @recipient.profile.job_title %></h3>
+      </div>
+    </div>
+    <ul class="list-unstyled">
+      <div class="col-sm-8 col-sm-offset-2">
+        <div class="well row", id="body-well">
+          <% if @over_five %>
+            <%= link_to '?m=all' do %>
+              <div class="text-center">Show Previous</div>
+            <% end %>
+          <% else %>
+            <div class="text-center"></div>
+          <% end %>
+          <% @messages.each do |message| %>
+            <div class="col-sm-12">
+              <% if message.body %>
+                <% user = User.find(message.user_id) %>
+                <li>
+                    <% if user.profile.avatar %>
+                      <%= link_to user do %>
+                        <%= image_tag user.profile.avatar.url, class: 'message-avatar' %>
+                      <% end %>
+                    <% end %>
+                    <strong><%= user.profile.first_name %> <%= user.profile.last_name %></strong></br>
+                    <div class="col-sm-12 float-left"><%= message.body %></div>
+                    <h6 class="text-muted"><%= message.message_time %></h6>
+                </li>
+              <% end %>
             </div>
-          </div>
+          <% end %>
         </div>
       </div>
-    <% end %>
-  <% end %>
+    </ul>
+    <div class="col-sm-8 col-sm-offset-2">
+      <div class="well row", id="content-well">
+        <%= form_for [@conversation, @message] do |f| %>
+          <div class="form-group">
+            <%= f.text_area :body, class: "form-control" %>
+          </div>
+            <%= f.text_field :user_id, value: current_user.id, type: "hidden" %>
+          <div>
+            <%= f.submit "Send", class: "btn btn-default" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
 </div>
-<%= form_for [@conversation, @message], html: {class: "ui reply form"} do |f| %>
-  <div class="field">
-    <%= f.text_area :body, class: "form-control" %>
-  </div>
-    <%= f.text_field :user_id, value: current_user.id, type: "hidden" %>
-  <div>
-    <%= f.submit "Add Reply", class: "ui blue labeled submit icon button" %>
-  </div>
-<% end %>
